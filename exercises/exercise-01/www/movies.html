@@ -64,17 +64,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr v-for="movie in movies" :key="movie.id">
-                        <td>{{ movie.title }}</td>
-                        <td>{{ movie.plot }}</td>
-                        <td><img v-if="movie.poster" v-bind:src="movie.poster" alt="" @error="replaceByDefault"></td>
-                        <td>{{ movie.released }}</td>
-                        <td>
-                            <button @click="deleteMovie(movie.id)" type="button" class="btn btnsm">
-                                <i class="fas fa-trash-alt"></i>
-                            </button>
-                        </td>
-                    </tr>
+                    <table-row-temp></table-row-temp>
                 </tbody>
             </table>
         </div>
@@ -83,45 +73,19 @@
 
 <script src="https://unpkg.com/vue@3"></script>
 <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script src="../static/movie-card.js"></script>
 
 <script>
 // a default image to be used when the poster is not available
-const defaultImgUrl = "https://user-images.githubusercontent.com/24848110/33519396-7e56363c-d79d-11e7-969b-09782f5ccbab.png";
 
 Vue.createApp({
     data() {
         return {
-            movies: [],
             adding: false,
             newMovie: { }
         }
     },
     methods: {
-        listMovies() {
-            axios
-                .get("http://localhost:3000/api/movies")
-                .then(response => {
-                    this.movies = response.data;
-                    console.log(this.movies);
-                    this.movies.forEach((movie) => {
-                        if (movie.poster != null) {
-                            movie.poster = movie.poster.replace("http://ia.media-imdb.com/", "https://m.media-amazon.com/");
-                        }
-                        else {
-                            movie.poster = defaultImgUrl;
-                        }
-                    });
-                });
-        },
-        replaceByDefault(event) {
-            event.target.src = defaultImgUrl;
-        },
-        deleteMovie(moviesId) {
-            axios.delete("/api/movies/" + moviesId)
-                .then(response => {
-                    this.movies.splice(this.movies.findIndex(item => item.id === moviesId), 1);
-                });
-        },
         showAddMovieForm() {
             this.adding = true;
         },
@@ -146,10 +110,13 @@ Vue.createApp({
         }
     },
     created() {
-        this.listMovies();
         this.resetNewMovie();
+    },
+    components: {
+        'table-row-temp': MovieCard
     }
 }).mount("#crud-movies-app")
+
 </script>
 </body>
 
